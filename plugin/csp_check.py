@@ -1,20 +1,25 @@
 from typing import Dict, List, Tuple
+from urllib.parse import urlparse
 
 class CSPCheck:
-    def _check_sources(self, sources_str: str, directive: str, callback_server: str) -> Tuple[bool, str]:
+
+    @staticmethod
+    def _check_sources(sources_str: str, directive: str) -> Tuple[bool, str]:
         sources_list = sources_str.split()
 
         if '*' in sources_list:
             return (True, f"'{directive}': '*'")
-        
         return (False, "")
 
     @staticmethod
-    def csp_check(csp: Dict[str, str], callback_server: str) -> Tuple[bool, List[str]]:
+    def csp_check(csp: Dict[str, str]) -> Tuple[bool, List[str]]:
         vulnerable_reasons: List[str] = []
         
+        if not csp:
+            csp = {}
+
         default_sources_str = csp.get('default-src', '') 
-        directives_to_check = ['img-src', 'connect-src']
+        directives_to_check = ['img-src', 'connect-src', 'navigate-to']
 
         for directive in directives_to_check:
             sources_str = csp.get(directive)
@@ -24,8 +29,7 @@ class CSPCheck:
             if not check_str: 
                 continue
 
-            instance = CSPCheck() 
-            is_bypassable, reason = instance._check_sources(check_str, directive, callback_server)
+            is_bypassable, reason = CSPCheck._check_sources(check_str, directive)
             
             if is_bypassable:
                 vulnerable_reasons.append(reason)
@@ -33,4 +37,4 @@ class CSPCheck:
         if vulnerable_reasons:
             return (True, vulnerable_reasons)
         else:
-            return (False, []) 
+            return (False, [])

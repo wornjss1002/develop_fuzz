@@ -49,8 +49,8 @@ class FinalReportData:
 class ExploitScenario:
     scenario_name: str  # 예: "쿠키 탈취", "실시간 도청"
     is_possible: bool   # 이 공격이 가능한가?
-    severity: str       # 'Critical', 'High', 'Medium', 'Info'
     des: Optional[str] = None  # 불가능할 경우의 이유 (예: "HttpOnly 방어됨")
+    raw : Optional[str] = None
     poc_code: Optional[str] = None # 가능할 경우의 PoC 코드
 
 class IExploitCheck(ABC):
